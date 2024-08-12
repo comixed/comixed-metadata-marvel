@@ -35,8 +35,17 @@ public class MarvelMetadataAdaptorProvider extends AbstractMetadataAdaptorProvid
   private static final String VERSION = "0.1-SNAPSHOT";
   private static final String HOMEPAGE = "https://github.com/comixed/comixed-metadata-marvel";
 
+  // configuration options
+  static final String PROPERTY_PUBLIC_KEY = "marvel.public-key";
+  static final String PROPERTY_PRIVATE_KEY = "marvel.private-key";
+  static final String PROPERTY_SOURCE_DOMAIN = "marvel.source-domain";
+
   public MarvelMetadataAdaptorProvider() {
     super(PROVIDER_NAME, VERSION, HOMEPAGE);
+
+    this.addProperty(PROPERTY_PUBLIC_KEY);
+    this.addProperty(PROPERTY_PRIVATE_KEY);
+    this.addProperty(PROPERTY_SOURCE_DOMAIN);
   }
 
   @Override
