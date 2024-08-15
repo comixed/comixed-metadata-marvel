@@ -18,6 +18,9 @@
 
 package org.comixedproject.metadata.marvel.auth;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.DigestUtils;
 
@@ -28,7 +31,11 @@ import org.springframework.util.DigestUtils;
  * @author Darryl L. Pierce
  */
 @Log4j2
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MarvelAuthorizationAdaptor {
+  @Getter
+  private static final MarvelAuthorizationAdaptor instance = new MarvelAuthorizationAdaptor();
+
   /**
    * Returns the MD5 hash created from the timestamp, public, and private keys.
    *
@@ -45,6 +52,6 @@ public class MarvelAuthorizationAdaptor {
         publicKey,
         privateKey);
     return DigestUtils.md5DigestAsHex(
-        String.format("%d%s%s", timestamp, publicKey, privateKey).getBytes());
+        String.format("%s%s%s", String.valueOf(timestamp), privateKey, publicKey).getBytes());
   }
 }

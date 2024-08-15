@@ -44,7 +44,9 @@ public class MarvelAuthorizationAdaptorTest {
 
     assertEquals(
         DigestUtils.md5DigestAsHex(
-            String.format("%d%s%s", TEST_TIMESTAMP, TEST_PUBLIC_KEY, TEST_PRIVATE_KEY).getBytes()),
+            String.format(
+                    "%s%s%s", String.valueOf(TEST_TIMESTAMP), TEST_PRIVATE_KEY, TEST_PUBLIC_KEY)
+                .getBytes()),
         result);
   }
 }
