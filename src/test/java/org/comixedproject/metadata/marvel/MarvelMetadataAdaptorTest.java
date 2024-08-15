@@ -18,17 +18,25 @@
 
 package org.comixedproject.metadata.marvel;
 
+import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.PROPERTY_PRIVATE_KEY;
+import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.PROPERTY_PUBLIC_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.VolumeMetadata;
 import org.comixedproject.model.metadata.MetadataSource;
+import org.comixedproject.model.metadata.MetadataSourceProperty;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,10 +47,28 @@ public class MarvelMetadataAdaptorTest {
   private static final String TEST_ISSUE_NUMBER = "17";
   private static final String TEST_ISSUE_ID = "67890";
   private static final String TEST_WEB_ADDRESS = "http://www.marvel.com";
+  private static final String TEST_PUBLIC_KEY = "the.public.key";
+  private static final String TEST_PRIVATE_KEY = "the.private.key";
 
   @InjectMocks private MarvelMetadataAdaptor adaptor;
+  @Mock private MarvelGetVolumesAction getVolumesAction;
 
   @Mock private MetadataSource metadataSource;
+  @Mock private List<VolumeMetadata> volumeList;
+
+  final Set<MetadataSourceProperty> metadataSourceProperties = new HashSet<>();
+
+  @Before
+  public void setUp() throws MetadataException {
+    adaptor.getVolumesAction = getVolumesAction;
+    Mockito.when(getVolumesAction.execute()).thenReturn(volumeList);
+
+    Mockito.when(metadataSource.getProperties()).thenReturn(metadataSourceProperties);
+    metadataSourceProperties.add(
+        new MetadataSourceProperty(metadataSource, PROPERTY_PUBLIC_KEY, TEST_PUBLIC_KEY));
+    metadataSourceProperties.add(
+        new MetadataSourceProperty(metadataSource, PROPERTY_PRIVATE_KEY, TEST_PRIVATE_KEY));
+  }
 
   @Test
   public void testDoGetIssue() throws MetadataException {
@@ -55,6 +81,12 @@ public class MarvelMetadataAdaptorTest {
         adaptor.getVolumes(TEST_SERIES, TEST_MAX_RECORDS, metadataSource);
 
     assertNotNull(result);
+    assertSame(volumeList, result);
+
+    Mockito.verify(getVolumesAction, Mockito.times(1)).setSeries(TEST_SERIES);
+    Mockito.verify(getVolumesAction, Mockito.times(1)).setMaxRecords(TEST_MAX_RECORDS);
+    Mockito.verify(getVolumesAction, Mockito.times(1)).setPublicKey(TEST_PUBLIC_KEY);
+    Mockito.verify(getVolumesAction, Mockito.times(1)).setPrivateKey(TEST_PRIVATE_KEY);
   }
 
   @Test

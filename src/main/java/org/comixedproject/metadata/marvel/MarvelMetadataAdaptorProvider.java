@@ -48,12 +48,23 @@ public class MarvelMetadataAdaptorProvider extends AbstractMetadataAdaptorProvid
     this.addProperty(PROPERTY_SOURCE_DOMAIN);
   }
 
+  /**
+   * Returns an instance of the adaptor.
+   *
+   * @return the adaptor
+   */
   @Override
   public MetadataAdaptor create() {
     log.debug("Creating an instance of the Marvel metadata adaptor");
     return new MarvelMetadataAdaptor();
   }
 
+  /**
+   * Checks if the provided URL is one pointing to Marvel's online service.
+   *
+   * @param webAddress the web address
+   * @return true if it's from Marvel, false otherwise
+   */
   @Override
   public boolean supportedReference(final String webAddress) {
     return false;

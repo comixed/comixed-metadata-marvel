@@ -18,19 +18,32 @@
 
 package org.comixedproject.metadata.marvel;
 
-import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.PROVIDER_NAME;
+import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.*;
 
 import java.util.List;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.adaptors.AbstractMetadataAdaptor;
+import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.IssueMetadata;
 import org.comixedproject.metadata.model.VolumeMetadata;
 import org.comixedproject.model.metadata.MetadataSource;
 
+/**
+ * <code>MarvelMetadataAdaptor</code> provides the adaptor to use when fetching metadata from
+ * Marvel's online service.
+ *
+ * @author Darryl L. Pierce
+ */
 @Log4j2
 public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
+  /** The value to use where a publisher is required. */
+  public static final String PUBLISHER_NAME = "Marvel";
+
+  MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
+
   public MarvelMetadataAdaptor() {
     super("ComiXed Marvel Scraper", PROVIDER_NAME);
   }
@@ -43,10 +56,21 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   }
 
   @Override
+  @Synchronized
   public List<VolumeMetadata> getVolumes(
       final String seriesName, final Integer maxRecords, final MetadataSource metadataSource)
       throws MetadataException {
-    return List.of();
+    log.debug("Fetching volumes from Marvel: name={}", seriesName);
+
+    getVolumesAction.setSeries(seriesName);
+    getVolumesAction.setMaxRecords(maxRecords);
+    getVolumesAction.setPublicKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PUBLIC_KEY, true));
+    getVolumesAction.setPrivateKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PRIVATE_KEY, true));
+
+    log.debug("Executing action");
+    return getVolumesAction.execute();
   }
 
   @Override
