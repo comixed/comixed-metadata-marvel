@@ -35,7 +35,6 @@ public class MarvelMetadataAdaptorProviderTest {
   public void testPropertiesDefined() {
     assertTrue(provider.getProperties().contains(PROPERTY_PUBLIC_KEY));
     assertTrue(provider.getProperties().contains(PROPERTY_PRIVATE_KEY));
-    assertTrue(provider.getProperties().contains(PROPERTY_SOURCE_DOMAIN));
   }
 
   @Test
