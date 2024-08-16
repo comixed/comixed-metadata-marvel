@@ -18,6 +18,10 @@
 
 package org.comixedproject.metadata.marvel.actions;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.actions.AbstractScrapingAction;
 import org.comixedproject.metadata.marvel.auth.MarvelAuthorizationAdaptor;
+import org.comixedproject.metadata.marvel.models.BaseMarvelResponse;
+import org.comixedproject.metadata.marvel.models.MarvelDate;
 
 /**
  * <code>AbstractMarvelScrapingAction</code> provides a foundation for creating actions for the
@@ -37,10 +43,17 @@ import org.comixedproject.metadata.marvel.auth.MarvelAuthorizationAdaptor;
 public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAction<T> {
   // 1 - base URL and port, 2 - path, 3 - query parameters, 4 - timestamp, 5 - api key
   private static final String URL_FORMAT = "%s/v1/public/%s?%s&ts=%s&apikey=%s&hash=%s";
+  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
   @Getter @Setter private String baseUrl = "https://gateway.marvel.com:443";
   @Getter @Setter private String publicKey;
   @Getter @Setter private String privateKey;
+
+  protected boolean isDone(final BaseMarvelResponse<?> response) {
+    return ((response.getData().getLimit() + response.getData().getOffset())
+            + response.getData().getCount())
+        >= response.getData().getTotal();
+  }
 
   /**
    * Ensures the minimal settings are defined.
@@ -72,5 +85,15 @@ public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAc
         this.getPublicKey(),
         MarvelAuthorizationAdaptor.getInstance()
             .getHashForRequest(timestamp, publicKey, privateKey));
+  }
+
+  protected Date doConverDate(final Optional<MarvelDate> date) {
+    if (date.isEmpty()) return null;
+    try {
+      return dateFormat.parse(date.get().getDate());
+    } catch (ParseException error) {
+      log.error("Failed to parse date", error);
+      return null;
+    }
   }
 }

@@ -25,6 +25,8 @@ import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.adaptors.AbstractMetadataAdaptor;
+import org.comixedproject.metadata.marvel.actions.AbstractMarvelScrapingAction;
+import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.IssueMetadata;
@@ -43,16 +45,25 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   public static final String PUBLISHER_NAME = "Marvel";
 
   MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
+  MarvelGetIssueAction getIssueAction = new MarvelGetIssueAction();
 
   public MarvelMetadataAdaptor() {
     super("ComiXed Marvel Scraper", PROVIDER_NAME);
   }
 
   @Override
+  @Synchronized
   protected IssueMetadata doGetIssue(
       final String volume, final String issueNumber, final MetadataSource metadataSource)
       throws MetadataException {
-    return null;
+
+    this.getIssueAction.setSeries(volume);
+    this.getIssueAction.setIssueNumber(issueNumber);
+    this.doSetCommonProperties(getIssueAction, metadataSource);
+
+    final List<IssueMetadata> result = this.getIssueAction.execute();
+
+    return (result.isEmpty() ? null : result.get(0));
   }
 
   @Override
@@ -64,13 +75,20 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
 
     getVolumesAction.setSeries(seriesName);
     getVolumesAction.setMaxRecords(maxRecords);
-    getVolumesAction.setPublicKey(
-        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PUBLIC_KEY, true));
-    getVolumesAction.setPrivateKey(
-        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PRIVATE_KEY, true));
+
+    doSetCommonProperties(getVolumesAction, metadataSource);
 
     log.debug("Executing action");
     return getVolumesAction.execute();
+  }
+
+  private void doSetCommonProperties(
+      final AbstractMarvelScrapingAction<?> action, final MetadataSource metadataSource)
+      throws MetadataException {
+    action.setPublicKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PUBLIC_KEY, true));
+    action.setPrivateKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PRIVATE_KEY, true));
   }
 
   @Override

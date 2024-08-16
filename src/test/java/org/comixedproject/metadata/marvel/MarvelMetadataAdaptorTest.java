@@ -22,12 +22,15 @@ import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.P
 import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.PROPERTY_PUBLIC_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
+import org.comixedproject.metadata.model.IssueMetadata;
 import org.comixedproject.metadata.model.VolumeMetadata;
 import org.comixedproject.model.metadata.MetadataSource;
 import org.comixedproject.model.metadata.MetadataSourceProperty;
@@ -52,9 +55,11 @@ public class MarvelMetadataAdaptorTest {
 
   @InjectMocks private MarvelMetadataAdaptor adaptor;
   @Mock private MarvelGetVolumesAction getVolumesAction;
+  @Mock private MarvelGetIssueAction getIssueAction;
 
   @Mock private MetadataSource metadataSource;
   @Mock private List<VolumeMetadata> volumeList;
+  @Mock private IssueMetadata issue;
 
   final Set<MetadataSourceProperty> metadataSourceProperties = new HashSet<>();
 
@@ -72,7 +77,20 @@ public class MarvelMetadataAdaptorTest {
 
   @Test
   public void testDoGetIssue() throws MetadataException {
-    assertNull(adaptor.doGetIssue(TEST_VOLUME, TEST_ISSUE_NUMBER, metadataSource));
+    final List<IssueMetadata> issueList = new ArrayList<>();
+    issueList.add(issue);
+
+    Mockito.when(getIssueAction.execute()).thenReturn(issueList);
+
+    final IssueMetadata result = adaptor.doGetIssue(TEST_VOLUME, TEST_ISSUE_NUMBER, metadataSource);
+
+    assertNotNull(result);
+    assertSame(issue, result);
+
+    Mockito.verify(getIssueAction, Mockito.times(1)).setSeries(TEST_VOLUME);
+    Mockito.verify(getIssueAction, Mockito.times(1)).setIssueNumber(TEST_ISSUE_NUMBER);
+    Mockito.verify(getIssueAction, Mockito.times(1)).setPublicKey(TEST_PUBLIC_KEY);
+    Mockito.verify(getIssueAction, Mockito.times(1)).setPrivateKey(TEST_PRIVATE_KEY);
   }
 
   @Test
