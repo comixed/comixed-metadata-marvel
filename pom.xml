@@ -43,6 +43,11 @@
         <sonar.links.scm>https://github.com/comixed/comixed-metadata-marvel</sonar.links.scm>
         <sonar.links.issue>https://github.com/comixed/comixed-metadata-marvel/issues</sonar.links.issue>
         <sonar.sources>${project.basedir}/src/main/java</sonar.sources>
+        <sonar.exclusions>
+            **/models/*,
+            **/test/**,
+            **/*Exception
+        </sonar.exclusions>
         <lombok.version>1.18.30</lombok.version>
         <log4j.version>2.20.0</log4j.version>
     </properties>
@@ -237,8 +242,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
                 <configuration>
-                    <!-- excludes>
-                    </excludes -->
+                    <excludes>
+                        <exclude>**/models/**</exclude>
+                        <exclude>**/*Exception</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

@@ -102,10 +102,7 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
                         volume.getThumbnail().getPath(), volume.getThumbnail().getExtension()));
                 result.add(entry);
               });
-      done =
-          ((response.getData().getLimit() + response.getData().getOffset())
-                  + response.getData().getCount())
-              >= response.getData().getTotal();
+      done = isDone(response);
     }
 
     log.debug("Returning {} volume(s)", result.size());
