@@ -38,14 +38,12 @@ public class MarvelMetadataAdaptorProvider extends AbstractMetadataAdaptorProvid
   // configuration options
   static final String PROPERTY_PUBLIC_KEY = "marvel.public-key";
   static final String PROPERTY_PRIVATE_KEY = "marvel.private-key";
-  static final String PROPERTY_SOURCE_DOMAIN = "marvel.source-domain";
 
   public MarvelMetadataAdaptorProvider() {
     super(PROVIDER_NAME, VERSION, HOMEPAGE);
 
     this.addProperty(PROPERTY_PUBLIC_KEY);
     this.addProperty(PROPERTY_PRIVATE_KEY);
-    this.addProperty(PROPERTY_SOURCE_DOMAIN);
   }
 
   /**
