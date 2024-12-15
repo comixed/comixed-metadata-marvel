@@ -65,7 +65,7 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
     }
 
     while (!done) {
-      log.trace("Generating request URL");
+      log.trace("Generating request URL: series={}", this.series);
       final String url = this.doCreateUrl("series", String.format("title=%s", encodedName));
       final WebClient client = this.createWebClient(url);
       final Mono<MarvelGetVolumesQueryResponse> request =
