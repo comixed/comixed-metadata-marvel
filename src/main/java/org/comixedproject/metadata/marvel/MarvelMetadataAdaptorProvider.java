@@ -32,7 +32,7 @@ import org.comixedproject.metadata.adaptors.MetadataAdaptor;
 @Log4j2
 public class MarvelMetadataAdaptorProvider extends AbstractMetadataAdaptorProvider {
   static final String PROVIDER_NAME = "MarvelMetadataAdaptor";
-  private static final String VERSION = "0.1-SNAPSHOT";
+  private static final String VERSION = "0.2-SNAPSHOT";
   private static final String HOMEPAGE = "https://github.com/comixed/comixed-metadata-marvel";
 
   // configuration options
