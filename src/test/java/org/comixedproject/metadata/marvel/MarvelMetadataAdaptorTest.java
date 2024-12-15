@@ -50,7 +50,11 @@ public class MarvelMetadataAdaptorTest {
   private static final String TEST_VOLUME = "12345";
   private static final String TEST_ISSUE_NUMBER = "17";
   private static final String TEST_ISSUE_ID = "67890";
-  private static final String TEST_WEB_ADDRESS = "http://www.marvel.com";
+  private static final String TEST_REFERENCE_ID = "97135";
+  private static final String TEST_WEB_ADDRESS =
+      "http://marvel.com/comics/issue/"
+          + TEST_REFERENCE_ID
+          + "/scarlet_witch_2023_2?utm_campaign=apiRef&utm_source=763df8a7c3c0f6d3bb7fcf088bbf6ee1";
   private static final String TEST_PUBLIC_KEY = "the.public.key";
   private static final String TEST_PRIVATE_KEY = "the.private.key";
 
@@ -136,5 +140,6 @@ public class MarvelMetadataAdaptorTest {
     final String result = adaptor.getReferenceId(TEST_WEB_ADDRESS);
 
     assertNotNull(result);
+    assertEquals(TEST_REFERENCE_ID, result);
   }
 }
