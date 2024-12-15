@@ -23,39 +23,34 @@ import java.util.List;
 import lombok.Getter;
 
 /**
- * <code>MarvelGetIssueRecord</code> represents a single record in the response body for a get issue
- * request to Marvel.
+ * <code>MarvelIssueDetailRecord</code> represents a single issue in a list of detailed issues.
  *
  * @author Darryl L. Pierce
  */
-public class MarvelGetIssueRecord {
+public class MarvelIssueDetailRecord {
   @JsonProperty("id")
   @Getter
   private String id;
-
-  @JsonProperty("series")
-  @Getter
-  private MarvelSeries series;
-
-  @JsonProperty("issueNumber")
-  @Getter
-  private String issueNumber;
 
   @JsonProperty("title")
   @Getter
   private String title;
 
+  @JsonProperty("issueNumber")
+  @Getter
+  private String issueNumber;
+
   @JsonProperty("description")
   @Getter
   private String description;
 
-  @JsonProperty("resourceURI")
-  @Getter
-  private String resourceURI;
-
   @JsonProperty("urls")
   @Getter
   private List<MarvelUrl> urls;
+
+  @JsonProperty("series")
+  @Getter
+  private MarvelSeries series;
 
   @JsonProperty("dates")
   @Getter
@@ -65,15 +60,15 @@ public class MarvelGetIssueRecord {
   @Getter
   private MarvelThumbnail thumbnail;
 
+  @JsonProperty("images")
+  @Getter
+  private List<MarvelThumbnail> images;
+
   @JsonProperty("creators")
   @Getter
-  private MarvelIssueCredits creators;
-
-  @JsonProperty("characters")
-  @Getter
-  private MarvelIssueCharacters characters;
-
-  @JsonProperty("stories")
-  @Getter
-  private MarvelIssueStories stories;
+  private List<MarvelCreditEntry> creators;
+  /* TODO the following need fleshing out
+  @JsonProperty("characters") @Getter private List<?> characters;
+  @JsonProperty("stories") @Getter private List<?> stories;
+  */
 }

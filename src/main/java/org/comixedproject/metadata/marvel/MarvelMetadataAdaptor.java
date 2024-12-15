@@ -27,6 +27,7 @@ import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.adaptors.AbstractMetadataAdaptor;
 import org.comixedproject.metadata.marvel.actions.AbstractMarvelScrapingAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
+import org.comixedproject.metadata.marvel.actions.MarvelGetIssueDetailsAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.IssueMetadata;
@@ -46,6 +47,7 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
 
   MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
   MarvelGetIssueAction getIssueAction = new MarvelGetIssueAction();
+  MarvelGetIssueDetailsAction getIssueDetailsAction = new MarvelGetIssueDetailsAction();
 
   public MarvelMetadataAdaptor() {
     super("ComiXed Marvel Scraper", PROVIDER_NAME);
@@ -82,15 +84,6 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
     return getVolumesAction.execute();
   }
 
-  private void doSetCommonProperties(
-      final AbstractMarvelScrapingAction<?> action, final MetadataSource metadataSource)
-      throws MetadataException {
-    action.setPublicKey(
-        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PUBLIC_KEY, true));
-    action.setPrivateKey(
-        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PRIVATE_KEY, true));
-  }
-
   @Override
   public List<IssueDetailsMetadata> getAllIssues(
       final String volume, final MetadataSource metadataSource) throws MetadataException {
@@ -100,11 +93,22 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   @Override
   public IssueDetailsMetadata getIssueDetails(
       final String issueId, final MetadataSource metadataSource) throws MetadataException {
-    return null;
+    this.getIssueDetailsAction.setComicId(issueId);
+    this.doSetCommonProperties(this.getIssueDetailsAction, metadataSource);
+    return this.getIssueDetailsAction.execute();
   }
 
   @Override
   public String getReferenceId(final String webAddress) {
     return "";
+  }
+
+  private void doSetCommonProperties(
+      final AbstractMarvelScrapingAction<?> action, final MetadataSource metadataSource)
+      throws MetadataException {
+    action.setPublicKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PUBLIC_KEY, true));
+    action.setPrivateKey(
+        this.getSourcePropertyByName(metadataSource.getProperties(), PROPERTY_PRIVATE_KEY, true));
   }
 }

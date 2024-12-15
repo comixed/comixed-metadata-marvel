@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
+import org.comixedproject.metadata.marvel.actions.MarvelGetIssueDetailsAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.IssueMetadata;
@@ -56,16 +57,21 @@ public class MarvelMetadataAdaptorTest {
   @InjectMocks private MarvelMetadataAdaptor adaptor;
   @Mock private MarvelGetVolumesAction getVolumesAction;
   @Mock private MarvelGetIssueAction getIssueAction;
+  @Mock private MarvelGetIssueDetailsAction getIssueDetailsAction;
 
   @Mock private MetadataSource metadataSource;
   @Mock private List<VolumeMetadata> volumeList;
   @Mock private IssueMetadata issue;
+  @Mock private IssueDetailsMetadata issueDetailsMetadata;
 
   final Set<MetadataSourceProperty> metadataSourceProperties = new HashSet<>();
 
   @Before
   public void setUp() throws MetadataException {
     adaptor.getVolumesAction = getVolumesAction;
+    adaptor.getIssueAction = getIssueAction;
+    adaptor.getIssueDetailsAction = getIssueDetailsAction;
+
     Mockito.when(getVolumesAction.execute()).thenReturn(volumeList);
 
     Mockito.when(metadataSource.getProperties()).thenReturn(metadataSourceProperties);
@@ -116,9 +122,13 @@ public class MarvelMetadataAdaptorTest {
 
   @Test
   public void testGetIssueDetails() throws MetadataException {
+    Mockito.when(getIssueDetailsAction.execute()).thenReturn(issueDetailsMetadata);
     final IssueDetailsMetadata result = adaptor.getIssueDetails(TEST_ISSUE_ID, metadataSource);
 
-    assertNull(result);
+    assertNotNull(result);
+    assertSame(issueDetailsMetadata, result);
+
+    Mockito.verify(getIssueDetailsAction, Mockito.times(1)).setComicId(TEST_ISSUE_ID);
   }
 
   @Test
