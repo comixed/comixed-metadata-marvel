@@ -43,7 +43,7 @@ import org.comixedproject.metadata.marvel.models.MarvelDate;
 public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAction<T> {
   // 1 - base URL and port, 2 - path, 3 - query parameters, 4 - timestamp, 5 - api key
   private static final String URL_FORMAT = "%s/v1/public/%s?%s&ts=%s&apikey=%s&hash=%s";
-  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+  static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
   @Getter @Setter private String baseUrl = "https://gateway.marvel.com:443";
   @Getter @Setter private String publicKey;
