@@ -27,10 +27,7 @@ import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.adaptors.AbstractMetadataAdaptor;
-import org.comixedproject.metadata.marvel.actions.AbstractMarvelScrapingAction;
-import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
-import org.comixedproject.metadata.marvel.actions.MarvelGetIssueDetailsAction;
-import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
+import org.comixedproject.metadata.marvel.actions.*;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.comixedproject.metadata.model.IssueMetadata;
 import org.comixedproject.metadata.model.VolumeMetadata;
@@ -54,6 +51,7 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
   MarvelGetIssueAction getIssueAction = new MarvelGetIssueAction();
   MarvelGetIssueDetailsAction getIssueDetailsAction = new MarvelGetIssueDetailsAction();
+  MarvelGetAllIssuesAction getAllIssuesAction = new MarvelGetAllIssuesAction();
 
   public MarvelMetadataAdaptor() {
     super("ComiXed Marvel Scraper", PROVIDER_NAME);
@@ -80,33 +78,42 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
       final String seriesName, final Integer maxRecords, final MetadataSource metadataSource)
       throws MetadataException {
     log.debug("Fetching volumes from Marvel: name={}", seriesName);
-
     getVolumesAction.setSeries(seriesName);
     getVolumesAction.setMaxRecords(maxRecords);
 
     doSetCommonProperties(getVolumesAction, metadataSource);
 
-    log.debug("Executing action");
+    log.debug("Getting all volumes");
     return getVolumesAction.execute();
   }
 
   @Override
   public List<IssueDetailsMetadata> getAllIssues(
-      final String volume, final MetadataSource metadataSource) throws MetadataException {
-    return List.of();
+      final String seriesId, final MetadataSource metadataSource) throws MetadataException {
+    log.debug("Setting series id: {}", seriesId);
+    this.getAllIssuesAction.setSeriesId(seriesId);
+
+    doSetCommonProperties(getAllIssuesAction, metadataSource);
+
+    log.debug("Getting all issues for series");
+    return this.getAllIssuesAction.execute();
   }
 
   @Override
   public IssueDetailsMetadata getIssueDetails(
       final String issueId, final MetadataSource metadataSource) throws MetadataException {
+    log.debug("Setting issue id: {}:", issueId);
     this.getIssueDetailsAction.setComicId(issueId);
+
     this.doSetCommonProperties(this.getIssueDetailsAction, metadataSource);
+
+    log.debug("Getting issue details");
     return this.getIssueDetailsAction.execute();
   }
 
   @Override
   public String getReferenceId(final String webAddress) {
-
+    log.debug("Parsing web addresss: {}", webAddress);
     final Pattern pattern = Pattern.compile(REFERENCE_ID_PATTERN);
     final Matcher matches = pattern.matcher(webAddress);
     String referenceId = null;

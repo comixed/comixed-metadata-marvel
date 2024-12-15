@@ -23,11 +23,12 @@ import java.util.List;
 import lombok.Getter;
 
 /**
- * <code>MarvelIssueDetailRecord</code> represents a single issue in a list of detailed issues.
+ * <code>MarvelSeriesIssueDetailRecord</code> represents a single record when scraping an entire
+ * series.
  *
  * @author Darryl L. Pierce
  */
-public class MarvelIssueDetailRecord {
+public class MarvelSeriesIssueDetailRecord {
   @JsonProperty("id")
   @Getter
   private String id;
@@ -66,10 +67,9 @@ public class MarvelIssueDetailRecord {
 
   @JsonProperty("creators")
   @Getter
-  private List<MarvelCreditEntry> creators;
+  private MarvelSeriesIssueCreators creators;
 
-  /* TODO the following need fleshing out
+  /*
   @JsonProperty("characters") @Getter private List<?> characters;
   @JsonProperty("stories") @Getter private List<?> stories;
-  */
-}
+  */ }

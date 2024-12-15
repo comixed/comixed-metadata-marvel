@@ -21,6 +21,7 @@ package org.comixedproject.metadata.marvel.actions;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,13 +88,24 @@ public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAc
             .getHashForRequest(timestamp, publicKey, privateKey));
   }
 
-  protected Date doConverDate(final Optional<MarvelDate> date) {
-    if (date.isEmpty()) return null;
-    try {
-      return dateFormat.parse(date.get().getDate());
-    } catch (ParseException error) {
-      log.error("Failed to parse date", error);
-      return null;
+  protected Date getCoverDate(final List<MarvelDate> dates) {
+    return this.findDate("focDate", dates);
+  }
+
+  protected Date getStoreDate(final List<MarvelDate> dates) {
+    return this.findDate("onsaleDate", dates);
+  }
+
+  private Date findDate(final String dateType, final List<MarvelDate> dates) {
+    final Optional<MarvelDate> result =
+        dates.stream().filter(entry -> entry.getType().equals(dateType)).findFirst();
+    if (result.isPresent()) {
+      try {
+        return dateFormat.parse(result.get().getDate());
+      } catch (ParseException error) {
+        log.error("Failed to parse date", error);
+      }
     }
+    return null;
   }
 }

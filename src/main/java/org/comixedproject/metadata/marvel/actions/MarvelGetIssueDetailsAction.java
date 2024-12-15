@@ -18,7 +18,6 @@
 
 package org.comixedproject.metadata.marvel.actions;
 
-import java.text.ParseException;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +25,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.marvel.MarvelMetadataAdaptor;
-import org.comixedproject.metadata.marvel.models.MarvelDate;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueQueryResponse;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueRecord;
 import org.comixedproject.metadata.marvel.models.MarvelUrl;
@@ -81,27 +79,8 @@ public class MarvelGetIssueDetailsAction
     result.setSeries(detail.getSeries().getName());
     // TODO where to get the volume result.setVolume(?);
     result.setIssueNumber(detail.getIssueNumber());
-
-    Optional<MarvelDate> date =
-        detail.getDates().stream().filter(entry -> entry.getType().equals("focDate")).findFirst();
-    if (date.isEmpty()) {
-      try {
-        result.setCoverDate(dateFormat.parse(date.get().getDate()));
-      } catch (ParseException error) {
-        log.error("Failed to parse cover date", error);
-      }
-    }
-    date =
-        detail.getDates().stream()
-            .filter(entry -> entry.getType().equals("onsaleDate"))
-            .findFirst();
-    if (date.isPresent()) {
-      try {
-        result.setStoreDate(dateFormat.parse(date.get().getDate()));
-      } catch (ParseException error) {
-        log.error("Failed to parse store date", error);
-      }
-    }
+    result.setCoverDate(this.getCoverDate(detail.getDates()));
+    result.setStoreDate(this.getStoreDate(detail.getDates()));
     result.setDescription(detail.getDescription());
     Optional<MarvelUrl> address =
         detail.getUrls().stream().filter(entry -> entry.getType().equals(("detail"))).findFirst();
