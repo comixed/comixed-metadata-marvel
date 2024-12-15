@@ -33,6 +33,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           draft: false
           prerelease: true
-          title: Changes For 0.2-SNAPSHOT
+          title: Changes For 0.1.0
           files: |
-            comixed-metadata-marvel-0.2-SNAPSHOT-GA.zip
+            comixed-metadata-marvel-0.1.0-GA.zip

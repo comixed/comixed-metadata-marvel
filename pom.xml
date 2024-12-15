@@ -4,7 +4,7 @@
     <groupId>org.comixedproject</groupId>
     <artifactId>comixed-metadata-marvel</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>comixed-metadata-marvel</name>
     <url>http://www.comixedproject.org</url>
 
@@ -379,7 +379,7 @@
                 <artifactId>gitlog-maven-plugin</artifactId>
                 <version>1.14.0</version>
                 <configuration>
-                    <reportTitle>Changelog for the ComiXed Marvel Metadata Scraper v0.2-SNAPSHOT</reportTitle>
+                    <reportTitle>Changelog for the ComiXed Marvel Metadata Scraper v0.1.0</reportTitle>
                     <verbose>false</verbose>
                     <outputDirectory>${project.basedir}</outputDirectory>
                     <generateMarkdownChangeLog>true</generateMarkdownChangeLog>
