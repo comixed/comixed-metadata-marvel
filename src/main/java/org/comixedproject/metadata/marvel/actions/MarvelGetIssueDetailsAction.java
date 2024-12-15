@@ -25,6 +25,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.MarvelMetadataAdaptor;
 import org.comixedproject.metadata.marvel.models.MarvelDate;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueQueryResponse;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueRecord;
@@ -76,7 +77,7 @@ public class MarvelGetIssueDetailsAction
     final MarvelGetIssueRecord detail = response.getData().getResults().get(0);
     final IssueDetailsMetadata result = new IssueDetailsMetadata();
     result.setSourceId(detail.getId());
-    result.setPublisher("Marvel");
+    result.setPublisher(MarvelMetadataAdaptor.PUBLISHER_NAME);
     result.setSeries(detail.getSeries().getName());
     // TODO where to get the volume result.setVolume(?);
     result.setIssueNumber(detail.getIssueNumber());

@@ -21,6 +21,8 @@ package org.comixedproject.metadata.marvel;
 import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptorProvider.*;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.comixedproject.metadata.MetadataException;
@@ -44,6 +46,10 @@ import org.comixedproject.model.metadata.MetadataSource;
 public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   /** The value to use where a publisher is required. */
   public static final String PUBLISHER_NAME = "Marvel";
+
+  static final String REFERENCE_ID_PATTERN =
+      "^https?\\:\\/\\/.*(marvel\\.com)\\/comics\\/issue\\/([\\d]+).*";
+  private static final int REFERENCE_ID_POSITION = 2;
 
   MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
   MarvelGetIssueAction getIssueAction = new MarvelGetIssueAction();
@@ -100,7 +106,14 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
 
   @Override
   public String getReferenceId(final String webAddress) {
-    return "";
+
+    final Pattern pattern = Pattern.compile(REFERENCE_ID_PATTERN);
+    final Matcher matches = pattern.matcher(webAddress);
+    String referenceId = null;
+    if (matches.matches()) {
+      referenceId = matches.group(REFERENCE_ID_POSITION);
+    }
+    return referenceId;
   }
 
   private void doSetCommonProperties(
