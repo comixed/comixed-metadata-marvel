@@ -84,16 +84,8 @@ public class MarvelGetIssueAction extends AbstractMarvelScrapingAction<List<Issu
                 metadata.setVolumeName(issue.getSeries().getName());
                 metadata.setIssueNumber(issue.getIssueNumber());
                 metadata.setDescription(issue.getDescription());
-                metadata.setCoverDate(
-                    this.doConverDate(
-                        issue.getDates().stream()
-                            .filter(date -> date.getType().equals("onsaleDate"))
-                            .findFirst()));
-                metadata.setCoverDate(
-                    this.doConverDate(
-                        issue.getDates().stream()
-                            .filter(date -> date.getType().equals("onsaleDate"))
-                            .findFirst()));
+                metadata.setCoverDate(this.getCoverDate(issue.getDates()));
+                metadata.setStoreDate(this.getStoreDate(issue.getDates()));
                 metadata.setCoverUrl(
                     String.format(
                         "%s.%s",

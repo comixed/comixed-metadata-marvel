@@ -18,7 +18,8 @@
 
 package org.comixedproject.metadata.marvel.actions;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
 
 import java.io.IOException;
 import java.util.List;

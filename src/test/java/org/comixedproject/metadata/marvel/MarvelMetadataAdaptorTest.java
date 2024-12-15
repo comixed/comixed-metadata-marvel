@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.actions.MarvelGetAllIssuesAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetIssueAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetIssueDetailsAction;
 import org.comixedproject.metadata.marvel.actions.MarvelGetVolumesAction;
@@ -47,7 +48,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class MarvelMetadataAdaptorTest {
   private static final Integer TEST_MAX_RECORDS = 1000;
   private static final String TEST_SERIES = "The Series";
-  private static final String TEST_VOLUME = "12345";
+  private static final String TEST_SERIES_ID = "12345";
   private static final String TEST_ISSUE_NUMBER = "17";
   private static final String TEST_ISSUE_ID = "67890";
   private static final String TEST_REFERENCE_ID = "97135";
@@ -62,11 +63,13 @@ public class MarvelMetadataAdaptorTest {
   @Mock private MarvelGetVolumesAction getVolumesAction;
   @Mock private MarvelGetIssueAction getIssueAction;
   @Mock private MarvelGetIssueDetailsAction getIssueDetailsAction;
+  @Mock private MarvelGetAllIssuesAction getAllIssuesAction;
 
   @Mock private MetadataSource metadataSource;
   @Mock private List<VolumeMetadata> volumeList;
   @Mock private IssueMetadata issue;
   @Mock private IssueDetailsMetadata issueDetailsMetadata;
+  @Mock private List<IssueDetailsMetadata> allIssues;
 
   final Set<MetadataSourceProperty> metadataSourceProperties = new HashSet<>();
 
@@ -92,12 +95,13 @@ public class MarvelMetadataAdaptorTest {
 
     Mockito.when(getIssueAction.execute()).thenReturn(issueList);
 
-    final IssueMetadata result = adaptor.doGetIssue(TEST_VOLUME, TEST_ISSUE_NUMBER, metadataSource);
+    final IssueMetadata result =
+        adaptor.doGetIssue(TEST_SERIES_ID, TEST_ISSUE_NUMBER, metadataSource);
 
     assertNotNull(result);
     assertSame(issue, result);
 
-    Mockito.verify(getIssueAction, Mockito.times(1)).setSeries(TEST_VOLUME);
+    Mockito.verify(getIssueAction, Mockito.times(1)).setSeries(TEST_SERIES_ID);
     Mockito.verify(getIssueAction, Mockito.times(1)).setIssueNumber(TEST_ISSUE_NUMBER);
     Mockito.verify(getIssueAction, Mockito.times(1)).setPublicKey(TEST_PUBLIC_KEY);
     Mockito.verify(getIssueAction, Mockito.times(1)).setPrivateKey(TEST_PRIVATE_KEY);
@@ -119,9 +123,13 @@ public class MarvelMetadataAdaptorTest {
 
   @Test
   public void testGetAllIssues() throws MetadataException {
-    final List<IssueDetailsMetadata> result = adaptor.getAllIssues(TEST_VOLUME, metadataSource);
+    Mockito.when(getAllIssuesAction.execute()).thenReturn(allIssues);
+
+    final List<IssueDetailsMetadata> result = adaptor.getAllIssues(TEST_SERIES_ID, metadataSource);
 
     assertNotNull(result);
+
+    Mockito.verify(getAllIssuesAction, Mockito.times(1)).setSeriesId(TEST_SERIES_ID);
   }
 
   @Test
