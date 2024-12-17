@@ -9,9 +9,14 @@ its data source.
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=comixed_comixed-metadata-marvel)](https://sonarcloud.io/dashboard?id=comixed_comixed-metadata-marvel)
 
 
-# NOTES:
+# Limitations:
 
 The following are things to keep in mind when using this metadata scraper:
+
+## Marvel Provides Less Data Than ComicVine
+
+Marvel's database only returns characters and credits for comics. They don't currently return details like teams,
+locations, or story arcs for issues. 
  
 ## The Series Name Must Be A Match
 
