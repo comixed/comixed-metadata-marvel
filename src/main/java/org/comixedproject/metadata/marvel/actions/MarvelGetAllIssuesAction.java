@@ -42,7 +42,7 @@ import reactor.core.publisher.Mono;
 public class MarvelGetAllIssuesAction
     extends AbstractMarvelScrapingAction<List<IssueDetailsMetadata>> {
   // URL:
-  // https://gateway.marvel.com:443/v1/public/series/2069/comics?noVariants=true&apikey=763df8a7c3c0f6d3bb7fcf088bbf6ee1
+  // https://gateway.marvel.com/v1/public/series/2069/comics?noVariants=true&apikey=763df8a7c3c0f6d3bb7fcf088bbf6ee1
 
   @Getter @Setter private String seriesId;
 

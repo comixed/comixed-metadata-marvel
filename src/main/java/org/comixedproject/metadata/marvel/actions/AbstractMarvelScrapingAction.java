@@ -46,7 +46,7 @@ public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAc
   private static final String URL_FORMAT = "%s/v1/public/%s?%s&ts=%s&apikey=%s&hash=%s";
   static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
-  @Getter @Setter private String baseUrl = "https://gateway.marvel.com:443";
+  @Getter @Setter private String baseUrl = "https://gateway.marvel.com";
   @Getter @Setter private String publicKey;
   @Getter @Setter private String privateKey;
 
