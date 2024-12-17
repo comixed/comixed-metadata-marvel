@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.marvel.MarvelMetadataAdaptor;
+import org.comixedproject.metadata.marvel.adaptor.SeriesNameAdaptor;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueQueryResponse;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueRecord;
 import org.comixedproject.metadata.marvel.models.MarvelUrl;
@@ -76,8 +77,10 @@ public class MarvelGetIssueDetailsAction
     final IssueDetailsMetadata result = new IssueDetailsMetadata();
     result.setSourceId(detail.getId());
     result.setPublisher(MarvelMetadataAdaptor.PUBLISHER_NAME);
-    result.setSeries(detail.getSeries().getName());
-    // TODO where to get the volume result.setVolume(?);
+    final SeriesNameAdaptor.SeriesDetail seriesDetails =
+        SeriesNameAdaptor.getInstance().execute(detail.getSeries().getName());
+    result.setSeries(seriesDetails.getName());
+    result.setVolume(seriesDetails.getStartYear());
     result.setIssueNumber(detail.getIssueNumber());
     result.setCoverDate(this.getCoverDate(detail.getDates()));
     result.setStoreDate(this.getStoreDate(detail.getDates()));
