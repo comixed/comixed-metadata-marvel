@@ -28,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.marvel.adaptor.SeriesNameAdaptor;
+import org.comixedproject.metadata.marvel.models.MarvelCreditType;
 import org.comixedproject.metadata.marvel.models.MarvelGetAllIssuesQueryResponse;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -89,6 +90,19 @@ public class MarvelGetAllIssuesAction
                 entry.setSeries(seriesDetails.getName());
                 entry.setVolume(seriesDetails.getStartYear());
                 entry.setIssueNumber(issue.getIssueNumber());
+                issue
+                    .getCreators()
+                    .getItems()
+                    .forEach(
+                        credit ->
+                            entry
+                                .getCredits()
+                                .add(
+                                    new IssueDetailsMetadata.CreditEntry(
+                                        credit.getName(),
+                                        MarvelCreditType.forValue(credit.getRole())
+                                            .getTagType()
+                                            .getValue())));
                 entry.setTitle(issue.getTitle());
                 entry.setCoverDate(this.getCoverDate(issue.getDates()));
                 entry.setStoreDate(this.getStoreDate(issue.getDates()));
