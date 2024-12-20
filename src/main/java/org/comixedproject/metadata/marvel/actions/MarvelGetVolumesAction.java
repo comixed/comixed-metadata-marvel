@@ -20,9 +20,6 @@ package org.comixedproject.metadata.marvel.actions;
 
 import static org.comixedproject.metadata.marvel.MarvelMetadataAdaptor.PUBLISHER_NAME;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -44,7 +41,7 @@ import reactor.core.publisher.Mono;
 @Log4j2
 public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<VolumeMetadata>> {
   // The URL looks like:
-  // https://gateway.marvel.com:443/v1/public/series?title=SERIES&ts=TIMESTAMP&apikey=APIKEY&hash=KEY
+  // https://gateway.marvel.com/v1/public/series?titleStartsWith=SERIES&ts=TIMESTAMP&apikey=APIKEY&hash=KEY
 
   @Getter @Setter private String series;
   @Getter @Setter private Integer maxRecords;
@@ -58,16 +55,10 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
     final List<VolumeMetadata> result = new ArrayList<>();
     boolean done = false;
 
-    final String encodedName;
-    try {
-      encodedName = URLEncoder.encode(this.series, StandardCharsets.UTF_8.toString());
-    } catch (UnsupportedEncodingException error) {
-      throw new MetadataException("Failed to encode series name", error);
-    }
-
     while (!done) {
       log.trace("Generating request URL: series={}", this.series);
-      final String url = this.doCreateUrl("series", String.format("title=%s", encodedName));
+      final String url =
+          this.doCreateUrl("series", String.format("titleStartsWith=%s", this.series));
       final WebClient client = this.createWebClient(url);
       final Mono<MarvelGetVolumesQueryResponse> request =
           client.get().uri(url).retrieve().bodyToMono(MarvelGetVolumesQueryResponse.class);
@@ -83,7 +74,7 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
         throw new MetadataException("Failed to receive response");
       }
 
-      log.debug("Received: {} volume(s)", response.getData().getResults().size());
+      log.debug("Received: {} volume(s)", response.getData().getCount());
       response
           .getData()
           .getResults()

@@ -37,7 +37,7 @@ import reactor.core.publisher.Mono;
 @Log4j2
 public class MarvelGetIssueAction extends AbstractMarvelScrapingAction<List<IssueMetadata>> {
   // URL:
-  // https://gateway.marvel.com:443/v1/public/series/SERIES_NUMBER/comics?issueNumber=ISSUE_NUMBER&orderBy=issueNumber&limit=100&offset=1&apikey=APIKEY
+  // https://gateway.marvel.com/v1/public/series/SERIES_NUMBER/comics?issueNumber=ISSUE_NUMBER&orderBy=issueNumber&limit=100&offset=1&apikey=APIKEY
 
   @Setter private String series;
   @Setter private String issueNumber;
