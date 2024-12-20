@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
 import org.comixedproject.metadata.marvel.MarvelMetadataAdaptor;
 import org.comixedproject.metadata.marvel.adaptor.SeriesNameAdaptor;
+import org.comixedproject.metadata.marvel.models.MarvelCreditType;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueQueryResponse;
 import org.comixedproject.metadata.marvel.models.MarvelGetIssueRecord;
 import org.comixedproject.metadata.marvel.models.MarvelUrl;
@@ -85,6 +86,22 @@ public class MarvelGetIssueDetailsAction
     result.setCoverDate(this.getCoverDate(detail.getDates()));
     result.setStoreDate(this.getStoreDate(detail.getDates()));
     result.setDescription(detail.getDescription());
+    detail
+        .getCreators()
+        .getItems()
+        .forEach(
+            credit ->
+                result
+                    .getCredits()
+                    .add(
+                        new IssueDetailsMetadata.CreditEntry(
+                            credit.getName(),
+                            MarvelCreditType.forValue(credit.getRole()).getTagType().getValue())));
+    detail
+        .getCharacters()
+        .getItems()
+        .forEach(character -> result.getCharacters().add(character.getName()));
+    detail.getStories().getStories().forEach(story -> result.getStories().add(story.getName()));
     Optional<MarvelUrl> address =
         detail.getUrls().stream().filter(entry -> entry.getType().equals(("detail"))).findFirst();
     if (address.isPresent()) {
