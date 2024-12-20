@@ -44,7 +44,7 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
   // https://gateway.marvel.com/v1/public/series?titleStartsWith=SERIES&ts=TIMESTAMP&apikey=APIKEY&hash=KEY
 
   @Getter @Setter private String series;
-  @Getter @Setter private Integer maxRecords;
+  @Getter @Setter private Integer maxRecords = Integer.MAX_VALUE;
 
   @Override
   public List<VolumeMetadata> execute() throws MetadataException {
@@ -80,26 +80,33 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
           .getResults()
           .forEach(
               volume -> {
-                log.trace(
-                    "Processing volume record: {} name={}", volume.getId(), volume.getTitle());
-                final VolumeMetadata entry = new VolumeMetadata();
-                entry.setId(volume.getId());
-                entry.setPublisher(PUBLISHER_NAME);
-                final SeriesNameAdaptor.SeriesDetail seriesDetails =
-                    SeriesNameAdaptor.getInstance().execute(volume.getTitle());
-                entry.setName(seriesDetails.getName());
-                entry.setStartYear(seriesDetails.getStartYear());
-                entry.setIssueCount(volume.getComics().getAvailable());
-                entry.setImageURL(
-                    String.format(
-                        "%s.%s",
-                        volume.getThumbnail().getPath(), volume.getThumbnail().getExtension()));
-                result.add(entry);
+                if (canAddMoreResult(result)) {
+                  log.trace(
+                      "Processing volume record: {} name={}", volume.getId(), volume.getTitle());
+                  final VolumeMetadata entry = new VolumeMetadata();
+                  entry.setId(volume.getId());
+                  entry.setPublisher(PUBLISHER_NAME);
+                  final SeriesNameAdaptor.SeriesDetail seriesDetails =
+                      SeriesNameAdaptor.getInstance().execute(volume.getTitle());
+                  entry.setName(seriesDetails.getName());
+                  entry.setStartYear(seriesDetails.getStartYear());
+                  entry.setIssueCount(volume.getComics().getAvailable());
+                  entry.setImageURL(
+                      String.format(
+                          "%s.%s",
+                          volume.getThumbnail().getPath(), volume.getThumbnail().getExtension()));
+                  result.add(entry);
+                }
               });
-      done = isDone(response);
+      done = !canAddMoreResult(result) || isDone(response);
     }
 
     log.debug("Returning {} volume(s)", result.size());
     return result;
+  }
+
+  private boolean canAddMoreResult(final List<VolumeMetadata> result) {
+    log.trace("Checking that {} is less than {}", result.size(), this.maxRecords);
+    return result.size() < this.maxRecords;
   }
 }
