@@ -51,9 +51,13 @@ public abstract class AbstractMarvelScrapingAction<T> extends AbstractScrapingAc
   @Getter @Setter private String privateKey;
 
   protected boolean isDone(final BaseMarvelResponse<?> response) {
-    return ((response.getData().getLimit() + response.getData().getOffset())
-            + response.getData().getCount())
-        >= response.getData().getTotal();
+    final int current =
+        ((response.getData().getLimit() + response.getData().getOffset())
+            + response.getData().getCount());
+    final Integer total = response.getData().getTotal();
+    final boolean result = total <= current;
+    log.trace("current={} total={} result={}", current, total, result);
+    return result;
   }
 
   /**
