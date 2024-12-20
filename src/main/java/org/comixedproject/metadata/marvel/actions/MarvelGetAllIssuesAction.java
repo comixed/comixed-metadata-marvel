@@ -27,6 +27,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.adaptor.SeriesNameAdaptor;
 import org.comixedproject.metadata.marvel.models.MarvelGetAllIssuesQueryResponse;
 import org.comixedproject.metadata.model.IssueDetailsMetadata;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -83,11 +84,11 @@ public class MarvelGetAllIssuesAction
                 final IssueDetailsMetadata entry = new IssueDetailsMetadata();
                 entry.setSourceId(issue.getId());
                 entry.setPublisher(PUBLISHER_NAME);
-                entry.setSeries(issue.getSeries().getName());
+                final SeriesNameAdaptor.SeriesDetail seriesDetails =
+                    SeriesNameAdaptor.getInstance().execute(issue.getSeries().getName());
+                entry.setSeries(seriesDetails.getName());
+                entry.setVolume(seriesDetails.getStartYear());
                 entry.setIssueNumber(issue.getIssueNumber());
-                // TODO get the start year
-                //  entry.setVolume(issue.getStartYear());
-                entry.setVolume("");
                 entry.setTitle(issue.getTitle());
                 entry.setCoverDate(this.getCoverDate(issue.getDates()));
                 entry.setStoreDate(this.getStoreDate(issue.getDates()));
