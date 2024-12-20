@@ -30,6 +30,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.comixedproject.metadata.MetadataException;
+import org.comixedproject.metadata.marvel.adaptor.SeriesNameAdaptor;
 import org.comixedproject.metadata.marvel.models.MarvelGetVolumesQueryResponse;
 import org.comixedproject.metadata.model.VolumeMetadata;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -92,9 +93,11 @@ public class MarvelGetVolumesAction extends AbstractMarvelScrapingAction<List<Vo
                     "Processing volume record: {} name={}", volume.getId(), volume.getTitle());
                 final VolumeMetadata entry = new VolumeMetadata();
                 entry.setId(volume.getId());
-                entry.setName(volume.getTitle());
-                entry.setStartYear(volume.getStartYear());
                 entry.setPublisher(PUBLISHER_NAME);
+                final SeriesNameAdaptor.SeriesDetail seriesDetails =
+                    SeriesNameAdaptor.getInstance().execute(volume.getTitle());
+                entry.setName(seriesDetails.getName());
+                entry.setStartYear(seriesDetails.getStartYear());
                 entry.setIssueCount(volume.getComics().getAvailable());
                 entry.setImageURL(
                     String.format(
