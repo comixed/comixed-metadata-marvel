@@ -48,11 +48,6 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
       "^https?\\:\\/\\/.*(marvel\\.com)\\/comics\\/issue\\/([\\d]+).*";
   private static final int REFERENCE_ID_POSITION = 2;
 
-  MarvelGetVolumesAction getVolumesAction = new MarvelGetVolumesAction();
-  MarvelGetIssueAction getIssueAction = new MarvelGetIssueAction();
-  MarvelGetIssueDetailsAction getIssueDetailsAction = new MarvelGetIssueDetailsAction();
-  MarvelGetAllIssuesAction getAllIssuesAction = new MarvelGetAllIssuesAction();
-
   public MarvelMetadataAdaptor() {
     super("ComiXed Marvel Scraper", PROVIDER_NAME);
   }
@@ -62,12 +57,20 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   protected IssueMetadata doGetIssue(
       final String volume, final String issueNumber, final MetadataSource metadataSource)
       throws MetadataException {
+    return this.doGetIssue(volume, issueNumber, metadataSource, new MarvelGetIssueAction());
+  }
 
-    this.getIssueAction.setSeries(volume);
-    this.getIssueAction.setIssueNumber(issueNumber);
-    this.doSetCommonProperties(getIssueAction, metadataSource);
+  IssueMetadata doGetIssue(
+      final String volume,
+      final String issueNumber,
+      final MetadataSource metadataSource,
+      final MarvelGetIssueAction action)
+      throws MetadataException {
+    action.setSeries(volume);
+    action.setIssueNumber(issueNumber);
+    this.doSetCommonProperties(action, metadataSource);
 
-    final List<IssueMetadata> result = this.getIssueAction.execute();
+    final List<IssueMetadata> result = action.execute();
 
     return (result.isEmpty() ? null : result.get(0));
   }
@@ -77,38 +80,63 @@ public class MarvelMetadataAdaptor extends AbstractMetadataAdaptor {
   public List<VolumeMetadata> getVolumes(
       final String seriesName, final Integer maxRecords, final MetadataSource metadataSource)
       throws MetadataException {
-    log.debug("Fetching volumes from Marvel: name={}", seriesName);
-    getVolumesAction.setSeries(seriesName);
-    getVolumesAction.setMaxRecords(maxRecords);
+    return this.getVolumes(seriesName, maxRecords, metadataSource, new MarvelGetVolumesAction());
+  }
 
-    doSetCommonProperties(getVolumesAction, metadataSource);
+  List<VolumeMetadata> getVolumes(
+      final String seriesName,
+      final Integer maxRecords,
+      final MetadataSource metadataSource,
+      final MarvelGetVolumesAction action)
+      throws MetadataException {
+    log.debug("Fetching volumes from Marvel: name={}", seriesName);
+    action.setSeries(seriesName);
+    action.setMaxRecords(maxRecords);
+
+    doSetCommonProperties(action, metadataSource);
 
     log.debug("Getting all volumes");
-    return getVolumesAction.execute();
+    return action.execute();
   }
 
   @Override
   public List<IssueDetailsMetadata> getAllIssues(
       final String seriesId, final MetadataSource metadataSource) throws MetadataException {
-    log.debug("Setting series id: {}", seriesId);
-    this.getAllIssuesAction.setSeriesId(seriesId);
+    return this.getAllIssues(seriesId, metadataSource, new MarvelGetAllIssuesAction());
+  }
 
-    doSetCommonProperties(getAllIssuesAction, metadataSource);
+  List<IssueDetailsMetadata> getAllIssues(
+      final String seriesId,
+      final MetadataSource metadataSource,
+      final MarvelGetAllIssuesAction action)
+      throws MetadataException {
+    log.debug("Setting series id: {}", seriesId);
+    action.setSeriesId(seriesId);
+
+    doSetCommonProperties(action, metadataSource);
 
     log.debug("Getting all issues for series");
-    return this.getAllIssuesAction.execute();
+    return action.execute();
   }
 
   @Override
   public IssueDetailsMetadata getIssueDetails(
       final String issueId, final MetadataSource metadataSource) throws MetadataException {
-    log.debug("Setting issue id: {}:", issueId);
-    this.getIssueDetailsAction.setComicId(issueId);
+    return this.getIssueDetails(issueId, metadataSource, new MarvelGetIssueDetailsAction());
+  }
 
-    this.doSetCommonProperties(this.getIssueDetailsAction, metadataSource);
+  IssueDetailsMetadata getIssueDetails(
+      final String issueId,
+      final MetadataSource metadataSource,
+      final MarvelGetIssueDetailsAction action)
+      throws MetadataException {
+    log.debug("Setting issue id: {}:", issueId);
+    action.setComicId(issueId);
+
+    this.doSetCommonProperties(action, metadataSource);
 
     log.debug("Getting issue details");
-    return this.getIssueDetailsAction.execute();
+    return action.execute();
   }
 
   @Override

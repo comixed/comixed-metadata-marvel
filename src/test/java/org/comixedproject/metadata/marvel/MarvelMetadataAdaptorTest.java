@@ -75,10 +75,6 @@ public class MarvelMetadataAdaptorTest {
 
   @Before
   public void setUp() throws MetadataException {
-    adaptor.getVolumesAction = getVolumesAction;
-    adaptor.getIssueAction = getIssueAction;
-    adaptor.getIssueDetailsAction = getIssueDetailsAction;
-
     Mockito.when(getVolumesAction.execute()).thenReturn(volumeList);
 
     Mockito.when(metadataSource.getProperties()).thenReturn(metadataSourceProperties);
@@ -96,7 +92,7 @@ public class MarvelMetadataAdaptorTest {
     Mockito.when(getIssueAction.execute()).thenReturn(issueList);
 
     final IssueMetadata result =
-        adaptor.doGetIssue(TEST_SERIES_ID, TEST_ISSUE_NUMBER, metadataSource);
+        adaptor.doGetIssue(TEST_SERIES_ID, TEST_ISSUE_NUMBER, metadataSource, getIssueAction);
 
     assertNotNull(result);
     assertSame(issue, result);
@@ -110,7 +106,7 @@ public class MarvelMetadataAdaptorTest {
   @Test
   public void testGetVolumes() throws MetadataException {
     final List<VolumeMetadata> result =
-        adaptor.getVolumes(TEST_SERIES, TEST_MAX_RECORDS, metadataSource);
+        adaptor.getVolumes(TEST_SERIES, TEST_MAX_RECORDS, metadataSource, getVolumesAction);
 
     assertNotNull(result);
     assertSame(volumeList, result);
@@ -125,7 +121,8 @@ public class MarvelMetadataAdaptorTest {
   public void testGetAllIssues() throws MetadataException {
     Mockito.when(getAllIssuesAction.execute()).thenReturn(allIssues);
 
-    final List<IssueDetailsMetadata> result = adaptor.getAllIssues(TEST_SERIES_ID, metadataSource);
+    final List<IssueDetailsMetadata> result =
+        adaptor.getAllIssues(TEST_SERIES_ID, metadataSource, getAllIssuesAction);
 
     assertNotNull(result);
 
@@ -135,7 +132,8 @@ public class MarvelMetadataAdaptorTest {
   @Test
   public void testGetIssueDetails() throws MetadataException {
     Mockito.when(getIssueDetailsAction.execute()).thenReturn(issueDetailsMetadata);
-    final IssueDetailsMetadata result = adaptor.getIssueDetails(TEST_ISSUE_ID, metadataSource);
+    final IssueDetailsMetadata result =
+        adaptor.getIssueDetails(TEST_ISSUE_ID, metadataSource, getIssueDetailsAction);
 
     assertNotNull(result);
     assertSame(issueDetailsMetadata, result);
